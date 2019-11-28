@@ -1,5 +1,9 @@
 package zk.demo;
 
+import static com.google.common.io.ByteStreams.toByteArray;
+
+import com.google.common.io.ByteStreams;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -11,6 +15,8 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.GlobalCommand;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.image.Image;
+import org.zkoss.util.media.AMedia;
+import org.zkoss.util.media.Media;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.DefaultTreeModel;
 import org.zkoss.zul.DefaultTreeNode;
@@ -24,6 +30,7 @@ public class PdfViewerDemoVM {
     private final DefaultTreeModel<TreeData> fileTreeModel;
     private final ListModelSet<String> openFileModel;
     private final Map<String, Image> signatures;
+    private Media media;
 
     public PdfViewerDemoVM() {
         TreeNode<TreeData> root = treeNode("root",
@@ -61,10 +68,12 @@ public class PdfViewerDemoVM {
     }
 
     @Command
-    public void openPdfFile(@BindingParam("file") String file) {
+    public void openPdfFile(@BindingParam("file") String file) throws IOException {
         if (file.endsWith(".pdf")) {
             openFileModel.add(file);
             openFileModel.addToSelection(file);
+            byte[] content = toByteArray(PdfViewerDemoVM.class.getClassLoader().getResourceAsStream("pdfs/" + file));
+            media = new AMedia(file, null, "application/pdf", content);
         }
     }
 
@@ -90,5 +99,9 @@ public class PdfViewerDemoVM {
                               @BindingParam("timestamp") String timestamp,
                               @BindingParam("signature") Image signature) {
         signatures.put(file, signature);
+    }
+
+    public Media getMedia() {
+        return media;
     }
 }

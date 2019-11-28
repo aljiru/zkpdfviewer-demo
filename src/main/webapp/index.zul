@@ -36,7 +36,7 @@
 				</template>
 				<template name="model:tabpanel">
 					<tabpanel>
-						<pdfviewer src="pdfs/${each}" hflex="1" vflex="1">
+						<pdfviewer content="@load(vm.media)" hflex="1" vflex="1">
 							<custom-attributes pv="${self}"/>
 							<toolbar>
 								<toolbarbutton tooltiptext="First Page"
